@@ -17,9 +17,17 @@ jobs:
       - name: Build (Release)
         shell: pwsh
         run: |
+          Write-Host "MSBuild path: $(where.exe msbuild 2>$null)"
+          Write-Host "Building with Configuration=Release, Platform=AnyCPU"
           msbuild WindowsFormsApp1/WindowsFormsApp1.csproj `
             /p:Configuration=Release /p:Platform=AnyCPU /p:WarningLevel=4 `
-            /p:GenerateManifests=false /p:SignManifests=false /m
+            /p:GenerateManifests=false /p:SignManifests=false /m `
+            /v:minimal 2>&1 | Tee-Object -FilePath build.log
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "Build failed. Last 50 lines of log:"
+            Get-Content build.log -Tail 50
+            exit $LASTEXITCODE
+          }
 
       - name: ClickOnce Publish (on tag)
         if: startsWith(github.ref, 'refs/tags/v')
