@@ -18,14 +18,16 @@ jobs:
         shell: pwsh
         run: |
           msbuild WindowsFormsApp1/WindowsFormsApp1.csproj `
-            /p:Configuration=Release /p:Platform=AnyCPU /p:WarningLevel=4 /m
+            /p:Configuration=Release /p:Platform=AnyCPU /p:WarningLevel=4 `
+            /p:GenerateManifests=false /p:SignManifests=false /m
 
       - name: ClickOnce Publish (on tag)
         if: startsWith(github.ref, 'refs/tags/v')
         shell: pwsh
         run: |
           msbuild WindowsFormsApp1/WindowsFormsApp1.csproj `
-            /t:Publish /p:Configuration=Release /p:Platform=AnyCPU /p:WarningLevel=4
+            /t:Publish /p:Configuration=Release /p:Platform=AnyCPU /p:WarningLevel=4 `
+            /p:GenerateManifests=false /p:SignManifests=false
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
