@@ -15,10 +15,13 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Build (Release)
-        run: msbuild WindowsFormsApp1\WindowsFormsApp1.csproj /p:Configuration=Release /p:Platform=AnyCPU /p:WarningLevel=4 /p:GenerateManifests=false /p:SignManifests=false /m
+        shell: cmd
+        run: |
+          msbuild WindowsFormsApp1\WindowsFormsApp1.csproj /p:Configuration=Release /p:Platform=AnyCPU /p:WarningLevel=4 /p:GenerateManifests=false /p:SignManifests=false /m /v:minimal
 
       - name: ClickOnce Publish (on tag)
         if: startsWith(github.ref, 'refs/tags/v')
+        shell: cmd
         run: msbuild WindowsFormsApp1\WindowsFormsApp1.csproj /t:Publish /p:Configuration=Release /p:Platform=AnyCPU /p:WarningLevel=4 /p:GenerateManifests=false /p:SignManifests=false
 
       - name: Upload build artifacts
