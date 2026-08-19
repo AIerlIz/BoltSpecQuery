@@ -14,8 +14,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
       - name: Build (Release)
-        run: msbuild WindowsFormsApp1\WindowsFormsApp1.csproj /p:Configuration=Release /p:Platform=AnyCPU /p:WarningLevel=4 /p:GenerateManifests=false /p:SignManifests=false /m /v:minimal
+        shell: cmd
+        run: |
+          msbuild WindowsFormsApp1\WindowsFormsApp1.csproj /p:Configuration=Release /p:Platform=AnyCPU /p:WarningLevel=4 /p:GenerateManifests=false /p:SignManifests=false /m
+
+      - name: ClickOnce Publish (on tag)
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: cmd
+        run: msbuild WindowsFormsApp1\WindowsFormsApp1.csproj /t:Publish /p:Configuration=Release /p:Platform=AnyCPU /p:WarningLevel=4 /p:GenerateManifests=false /p:SignManifests=false
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -25,4 +35,12 @@ jobs:
             WindowsFormsApp1/bin/Release/BoltSpecQuery.exe
             WindowsFormsApp1/bin/Release/螺栓规格查询工具.exe
             WindowsFormsApp1/bin/Release/BoltSpecQuery.exe.config
+          if-no-files-found: warn
+
+      - name: Upload ClickOnce publish (on tag)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: actions/upload-artifact@v4
+        with:
+          name: BoltSpecQuery-clickonce
+          path: WindowsFormsApp1/publish/**/*
           if-no-files-found: warn
