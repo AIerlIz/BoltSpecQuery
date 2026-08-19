@@ -22,8 +22,8 @@ jobs:
         run: |
           msbuild WindowsFormsApp1\WindowsFormsApp1.csproj /p:Configuration=Release /p:Platform=AnyCPU /p:WarningLevel=4 /p:GenerateManifests=false /p:SignManifests=false /m
 
-      - name: ClickOnce Publish (on tag)
-        if: startsWith(github.ref, 'refs/tags/v')
+      - name: ClickOnce Publish
+        if: github.ref_type == 'tag'
         shell: cmd
         run: msbuild WindowsFormsApp1\WindowsFormsApp1.csproj /t:Publish /p:Configuration=Release /p:Platform=AnyCPU /p:WarningLevel=4 /p:GenerateManifests=false /p:SignManifests=false
 
@@ -37,16 +37,16 @@ jobs:
             WindowsFormsApp1/bin/Release/BoltSpecQuery.exe.config
           if-no-files-found: warn
 
-      - name: Upload ClickOnce publish (on tag)
-        if: startsWith(github.ref, 'refs/tags/v')
+      - name: Upload ClickOnce publish
+        if: github.ref_type == 'tag'
         uses: actions/upload-artifact@v4
         with:
           name: BoltSpecQuery-clickonce
           path: WindowsFormsApp1/publish/**/*
           if-no-files-found: warn
 
-      - name: Release (on tag)
-        if: startsWith(github.ref, 'refs/tags/v')
+      - name: Release
+        if: github.ref_type == 'tag'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
