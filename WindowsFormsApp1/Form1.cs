@@ -229,6 +229,16 @@ namespace WindowsFormsApp1
             UpdatePreview();
         }
 
+        private void _grid_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            // 重复点击已选中的行时 SelectionChanged 不会再次触发，
+            // 用 CellClick 保证每次点击都执行复制与预览刷新。
+            if (e.RowIndex < 0)   // 忽略表头点击
+                return;
+            CopySelected();
+            UpdatePreview();
+        }
+
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             SaveConfig();

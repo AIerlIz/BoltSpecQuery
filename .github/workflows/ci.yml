@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+    tags: [ 'v*' ]
+  pull_request:
+
+jobs:
+  build:
+    name: Build (Windows)
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Build (Release)
+        shell: pwsh
+        run: |
+          msbuild WindowsFormsApp1/WindowsFormsApp1.csproj `
+            /p:Configuration=Release /p:Platform=AnyCPU /p:WarningLevel=4 /m
+
+      - name: ClickOnce Publish (on tag)
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        run: |
+          msbuild WindowsFormsApp1/WindowsFormsApp1.csproj `
+            /t:Publish /p:Configuration=Release /p:Platform=AnyCPU /p:WarningLevel=4
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: BoltSpecQuery-build
+          path: |
+            WindowsFormsApp1/bin/Release/BoltSpecQuery.exe
+            WindowsFormsApp1/bin/Release/螺栓规格查询工具.exe
+            WindowsFormsApp1/bin/Release/BoltSpecQuery.exe.config
+
+      - name: Upload ClickOnce publish (on tag)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: actions/upload-artifact@v4
+        with:
+          name: BoltSpecQuery-clickonce
+          path: WindowsFormsApp1/publish/**/*

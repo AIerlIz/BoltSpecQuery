@@ -1,3 +1,9 @@
 <Solution>
-  <Project Path="WindowsFormsApp1/WindowsFormsApp1.csproj" Id="d8f2b2d9-e6c5-4a3b-8033-2cb2cd026a02" />
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+  </Configurations>
+  <Project Path="WindowsFormsApp1/WindowsFormsApp1.csproj" Id="d8f2b2d9-e6c5-4a3b-8033-2cb2cd026a02">
+    <Platform Solution="*|x64" Project="x64" />
+  </Project>
 </Solution>
